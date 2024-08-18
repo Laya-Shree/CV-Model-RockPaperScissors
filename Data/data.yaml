@@ -1,0 +1,13 @@
+train: C:\Users\layas\Desktop\Laya\Project Files\CV RockPaperScissors\Data\train\images
+val: C:\Users\layas\Desktop\Laya\Project Files\CV RockPaperScissors\Data\valid\images
+test: C:\Users\layas\Desktop\Laya\Project Files\CV RockPaperScissors\Data\test\images
+
+nc: 3
+names: ['Paper', 'Rock', 'Scissor']
+
+roboflow:
+  workspace: rock-paper-scissors-2
+  project: rock-paper-scissors-bwev7
+  version: 7
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/rock-paper-scissors-2/rock-paper-scissors-bwev7/dataset/7
