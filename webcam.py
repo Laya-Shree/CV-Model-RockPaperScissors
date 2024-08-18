@@ -5,12 +5,15 @@ from ultralytics import YOLOv10
 import os
 import time
 import random
-
+#To Do
+#1. What to do when there is no prediciton
+#2. resize and reposition AI img precisely
 model = YOLOv10(f'best.pt')
 
 timer = 0
 stateResult = False
 startGame = False
+scores = [0,0]
 
 cap = cv2.VideoCapture(0)
 custom_width = 1280
@@ -46,10 +49,20 @@ while True:
         
                 results = model(imgScaled)[0]
                 detections = sv.Detections.from_ultralytics(results)
+                print("detection:",detections.data)
                 playerMove = detections.data['class_name'][0]
                 randomNumber = random.randint(1,3)
+                AImap = {1:"Rock",2:"Paper",3:"Scissor"}
+                aiMove = AImap[randomNumber]
+                if(aiMove == playerMove):
+                    pass
+                elif(aiMove == "Rock" and playerMove == "Scissor") or (aiMove == "Paper" and playerMove == "Rock") or (aiMove == "Scissor" and playerMove == "Paper"):
+                    scores[0] += 1
+                else:
+                    scores[1] += 1
 
-                imgAI = cv2.imread(f'Resources/{randomNumber}.png',cv2.IMREAD_UNCHANGED)
+
+                imgAI = cv2.imread(f'Resources/{aiMove}.png',cv2.IMREAD_UNCHANGED)
                 imgBG = cvzone.overlayPNG(imgBG,imgAI,(149,310))
                 
                 annotated_image = bounding_box_annotator.annotate(scene=imgScaled, detections=detections)
@@ -58,6 +71,9 @@ while True:
     imgBG[160:610,868:1130] = player_image
     if stateResult:
         imgBG = cvzone.overlayPNG(imgBG,imgAI,(149,310))
+
+    cv2.putText(imgBG,str(scores[0]),(370,645),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
+    cv2.putText(imgBG,str(scores[1]),(1040,645),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
 
     cv2.imshow('Webcam', imgBG)
     k = cv2.waitKey(1)
