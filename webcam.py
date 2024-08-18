@@ -1,8 +1,10 @@
 import cv2
+import cvzone
 import supervision as sv
 from ultralytics import YOLOv10
 import os
 import time
+import random
 
 model = YOLOv10(f'best.pt')
 
@@ -28,7 +30,8 @@ while True:
     ret, frame = cap.read()
     imgScaled = cv2.resize(frame,(0,0),None,0.625,0.625)
     imgScaled = imgScaled[:,229:491]
-    annotated_image=imgScaled
+    player_image=imgScaled
+
     if not ret:
         break
 
@@ -43,19 +46,25 @@ while True:
         
                 results = model(imgScaled)[0]
                 detections = sv.Detections.from_ultralytics(results)
-                # print("results:",results)
-                class_name = detections.data['class_name'][0]
+                playerMove = detections.data['class_name'][0]
+                randomNumber = random.randint(1,3)
+
+                imgAI = cv2.imread(f'Resources/{randomNumber}.png',cv2.IMREAD_UNCHANGED)
+                imgBG = cvzone.overlayPNG(imgBG,imgAI,(149,310))
                 
-
-
                 annotated_image = bounding_box_annotator.annotate(scene=imgScaled, detections=detections)
-                annotated_image = label_annotator.annotate( scene=annotated_image, detections=detections)
+                player_image = label_annotator.annotate( scene=annotated_image, detections=detections)
 
-    imgBG[160:610,868:1130] =annotated_image
+    imgBG[160:610,868:1130] = player_image
+    if stateResult:
+        imgBG = cvzone.overlayPNG(imgBG,imgAI,(149,310))
+
     cv2.imshow('Webcam', imgBG)
     k = cv2.waitKey(1)
+
     if k == ord('s'):
         startGame = True
+        stateResult = False
         startTime = time.time()
 
     if k%256 ==27:
