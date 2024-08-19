@@ -8,7 +8,14 @@ import random
 #To Do
 #1. What to do when there is no prediciton
 #2. resize and reposition AI img precisely
+#3. Key to reset score
 model = YOLOv10(f'best.pt')
+
+def readPlayer():
+    ret, frame = cap.read()
+    imgScaled = cv2.resize(frame,(0,0),None,0.625,0.625)
+    imgScaled = imgScaled[:,229:491]  
+    return ret,imgScaled
 
 timer = 0
 stateResult = False
@@ -30,11 +37,7 @@ if not cap.isOpened():
 while True:
     imgBG = cv2.imread("Resources/MTC_bg.png")
     imgBG = cv2.resize(imgBG, (custom_width, custom_height))
-    ret, frame = cap.read()
-    imgScaled = cv2.resize(frame,(0,0),None,0.625,0.625)
-    imgScaled = imgScaled[:,229:491]
-    player_image=imgScaled
-
+    ret, player_image=readPlayer()
     if not ret:
         break
 
@@ -46,11 +49,17 @@ while True:
             if timer > 3:
                 stateResult = True
                 timer = 0
-        
-                results = model(imgScaled)[0]
+                
+                results = model(player_image)[0]
                 detections = sv.Detections.from_ultralytics(results)
-                print("detection:",detections.data)
+                while(not(detections.data['class_name'].size > 0)):
+                    print("No Detection!")
+                    ret, player_image=readPlayer()
+                    results = model(player_image)[0]
+                    detections = sv.Detections.from_ultralytics(results)
+
                 playerMove = detections.data['class_name'][0]
+
                 randomNumber = random.randint(1,3)
                 AImap = {1:"Rock",2:"Paper",3:"Scissor"}
                 aiMove = AImap[randomNumber]
@@ -65,7 +74,7 @@ while True:
                 imgAI = cv2.imread(f'Resources/{aiMove}.png',cv2.IMREAD_UNCHANGED)
                 imgBG = cvzone.overlayPNG(imgBG,imgAI,(149,310))
                 
-                annotated_image = bounding_box_annotator.annotate(scene=imgScaled, detections=detections)
+                annotated_image = bounding_box_annotator.annotate(scene=player_image, detections=detections)
                 player_image = label_annotator.annotate( scene=annotated_image, detections=detections)
 
     imgBG[160:610,868:1130] = player_image
