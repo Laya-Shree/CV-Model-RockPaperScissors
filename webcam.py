@@ -45,52 +45,69 @@ while True:
             time_count = {0:"Rock",1:"Paper",2:"Scissor",3:" ",4:" "}
             cv2.putText(imgBG,time_count[timer],(620,440),cv2.FONT_HERSHEY_PLAIN,2,(0,0,0),2)
             
-            if timer > 2:
+            if timer > 3:
                 stateResult = True
                 timer = 0
                 
+                # Display "Unable to detect" until an object is detected
                 results = model(player_image)[0]
                 detections = sv.Detections.from_ultralytics(results)
 
-                if(detections.data['class_name'].size):
+                while detections.data['class_name'].size == 0:
+                    cv2.waitKey(1)
+                    playerMove = "Unable to detect"
+                    imgBG[160:610,868:1130] = player_image
+                    cv2.putText(imgBG,str(scores[0]),(370,650),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
+                    cv2.putText(imgBG,str(scores[1]),(1040,655),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
+                    cv2.putText(imgBG, playerMove, (890, 700), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 4)
+                    cv2.imshow('Webcam', imgBG)
+                    
+                    # Keep trying to read a new image and make a prediction
+                    ret, player_image = readPlayer()
+                    results = model(player_image)[0]
+                    detections = sv.Detections.from_ultralytics(results)
 
-                    playerMove = detections.data['class_name'][0]
+                playerMove = detections.data['class_name'][0]
 
-                    randomNumber = random.randint(1,3)
-                    AImap = {1:"Rock",2:"Paper",3:"Scissor"}
-                    aiMove = AImap[randomNumber]
-                    if(aiMove == playerMove):
-                        pass
-                    elif(aiMove == "Rock" and playerMove == "Scissor") or (aiMove == "Paper" and playerMove == "Rock") or (aiMove == "Scissor" and playerMove == "Paper"):
-                        scores[0] += 1
-                    else:
-                        scores[1] += 1
-
-                    imgAI = cv2.imread(f'Resources/{aiMove}.png',cv2.IMREAD_UNCHANGED)
-                    annotated_image = bounding_box_annotator.annotate(scene=player_image, detections=detections)
-                    player_image = label_annotator.annotate( scene=annotated_image, detections=detections)
-
+                randomNumber = random.randint(1,3)
+                AImap = {1:"Rock",2:"Paper",3:"Scissor"}
+                aiMove = AImap[randomNumber]
+                if(aiMove == playerMove):
+                    pass
+                elif(aiMove == "Rock" and playerMove == "Scissor") or (aiMove == "Paper" and playerMove == "Rock") or (aiMove == "Scissor" and playerMove == "Paper"):
+                    scores[0] += 1
                 else:
-                    playerMove="Unable to Detect"
+                    scores[1] += 1
+
+
+                imgAI = cv2.imread(f'Resources/{aiMove}.png',cv2.IMREAD_UNCHANGED)
+                
+                annotated_image = bounding_box_annotator.annotate(scene=player_image, detections=detections)
+                player_image = label_annotator.annotate( scene=annotated_image, detections=detections)
 
     imgBG[160:610,868:1130] = player_image
 
-    if stateResult and detections.data['class_name'].size:
+    if stateResult:
         imgBG = cvzone.overlayPNG(imgBG,imgAI,(250,310))
 
     cv2.putText(imgBG,str(scores[0]),(370,650),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
     cv2.putText(imgBG,str(scores[1]),(1040,655),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
-    cv2.putText(imgBG,str(playerMove),(850,700),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),4)
+    cv2.putText(imgBG,str(playerMove),(890,700),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),4)
 
     cv2.imshow('Webcam', imgBG)
     k = cv2.waitKey(1)
+
+
 
     if k == ord('s'):
         startGame = True
         stateResult = False
         startTime = time.time()
+        playerMove=" "
     if k == ord('r'):
         scores=[0,0]
+        playerMove=" "
+
 
     if k%256 ==27:
         print("Escape hit, closing...")
