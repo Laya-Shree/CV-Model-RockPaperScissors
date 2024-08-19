@@ -5,9 +5,7 @@ from ultralytics import YOLOv10
 import os
 import time
 import random
-#To Do
-#2. resize and reposition AI img precisely
-#3. Key to reset score
+
 model = YOLOv10(f'best.pt')
 
 def readPlayer():
@@ -33,7 +31,7 @@ label_annotator = sv.LabelAnnotator()
 if not cap.isOpened():
     print("Unable to read camera feed")
 
-playerMove="Not Detected"
+playerMove=" "
 while True:
     imgBG = cv2.imread("Resources/MTC_bg.png")
     imgBG = cv2.resize(imgBG, (custom_width, custom_height))
@@ -43,9 +41,9 @@ while True:
 
     if startGame:
         if stateResult is False:
-            playerMove=None
-            timer = time.time() - startTime
-            cv2.putText(imgBG,str(int(timer)),(630,460),cv2.FONT_HERSHEY_PLAIN,6,(0,0,0),4)
+            timer = int(time.time() - startTime)
+            time_count = {0:"Rock",1:"Paper",2:"Scissor",3:" ",4:" "}
+            cv2.putText(imgBG,time_count[timer],(620,440),cv2.FONT_HERSHEY_PLAIN,2,(0,0,0),2)
             
             if timer > 3:
                 stateResult = True
@@ -72,17 +70,17 @@ while True:
 
 
                 imgAI = cv2.imread(f'Resources/{aiMove}.png',cv2.IMREAD_UNCHANGED)
-                imgBG = cvzone.overlayPNG(imgBG,imgAI,(149,310))
                 
                 annotated_image = bounding_box_annotator.annotate(scene=player_image, detections=detections)
                 player_image = label_annotator.annotate( scene=annotated_image, detections=detections)
 
     imgBG[160:610,868:1130] = player_image
-    if stateResult:
-        imgBG = cvzone.overlayPNG(imgBG,imgAI,(149,310))
 
-    cv2.putText(imgBG,str(scores[0]),(370,645),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
-    cv2.putText(imgBG,str(scores[1]),(1040,645),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
+    if stateResult:
+        imgBG = cvzone.overlayPNG(imgBG,imgAI,(250,310))
+
+    cv2.putText(imgBG,str(scores[0]),(370,650),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
+    cv2.putText(imgBG,str(scores[1]),(1040,655),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
     cv2.putText(imgBG,str(playerMove),(910,700),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),4)
 
     cv2.imshow('Webcam', imgBG)
