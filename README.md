@@ -19,6 +19,27 @@ This project is a computer vision-based Rock-Paper-Scissors game that uses hand 
 - **Bring your hand closer to the camera**: Ensure your hand is in focus for the camera to improve detection accuracy.
 - **Keep your hand ready**: Keep your hand steady and ready when timer displays rock - paper - scissors for better detection.
 
+### Setup
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/your-username/rock-paper-scissors-gesture-detection.git
+    cd CV-Model-RockPaperScissors
+    ```
+
+2. Install the dependencies:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3. Run the game:
+
+    ```bash
+    python game.py
+    ```
+
 
 ## How the Game Works
 
