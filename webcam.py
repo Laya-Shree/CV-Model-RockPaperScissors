@@ -92,6 +92,8 @@ while True:
         startGame = True
         stateResult = False
         startTime = time.time()
+    if k == ord('r'):
+        scores=[0,0]
 
     if k%256 ==27:
         print("Escape hit, closing...")
