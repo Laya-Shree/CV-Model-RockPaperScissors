@@ -1,7 +1,3 @@
-Here is the `README.md` file for your GitHub repository:
-
----
-
 # Rock-Paper-Scissors Gesture Detection Game
 
 This project is a computer vision-based Rock-Paper-Scissors game that uses hand gesture detection via YOLOv10. The game allows you to play against an AI by detecting your hand gesture and comparing it with the AI's random choice.
