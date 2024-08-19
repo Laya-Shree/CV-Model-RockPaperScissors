@@ -1,3 +1,4 @@
+cvzone==1.6.1
 opencv_python==4.10.0.84
 opencv_python_headless==4.10.0.84
 supervision==0.22.0
