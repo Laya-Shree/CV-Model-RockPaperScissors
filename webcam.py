@@ -6,7 +6,6 @@ import os
 import time
 import random
 #To Do
-#1. What to do when there is no prediciton
 #2. resize and reposition AI img precisely
 #3. Key to reset score
 model = YOLOv10(f'best.pt')
@@ -34,6 +33,7 @@ label_annotator = sv.LabelAnnotator()
 if not cap.isOpened():
     print("Unable to read camera feed")
 
+playerMove="Not Detected"
 while True:
     imgBG = cv2.imread("Resources/MTC_bg.png")
     imgBG = cv2.resize(imgBG, (custom_width, custom_height))
@@ -43,6 +43,7 @@ while True:
 
     if startGame:
         if stateResult is False:
+            playerMove=None
             timer = time.time() - startTime
             cv2.putText(imgBG,str(int(timer)),(630,460),cv2.FONT_HERSHEY_PLAIN,6,(0,0,0),4)
             
@@ -53,7 +54,6 @@ while True:
                 results = model(player_image)[0]
                 detections = sv.Detections.from_ultralytics(results)
                 while(not(detections.data['class_name'].size > 0)):
-                    print("No Detection!")
                     ret, player_image=readPlayer()
                     results = model(player_image)[0]
                     detections = sv.Detections.from_ultralytics(results)
@@ -83,6 +83,7 @@ while True:
 
     cv2.putText(imgBG,str(scores[0]),(370,645),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
     cv2.putText(imgBG,str(scores[1]),(1040,645),cv2.FONT_HERSHEY_PLAIN,4,(0,0,0),4)
+    cv2.putText(imgBG,str(playerMove),(910,700),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),4)
 
     cv2.imshow('Webcam', imgBG)
     k = cv2.waitKey(1)
