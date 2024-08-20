@@ -24,7 +24,7 @@ This project is a computer vision-based Rock-Paper-Scissors game that uses hand 
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/rock-paper-scissors-gesture-detection.git
+    git clone https://github.com/Laya-Shree/CV-Model-RockPaperScissors
     cd CV-Model-RockPaperScissors
     ```
 
